@@ -145,9 +145,11 @@ def place_order(request):
         for item_number in item_numbers:
             quantity = request.POST.get(f'quantity_{item_number}')
             if quantity:
-                quantities.append(quantity)
+                quantities.append(int(quantity))
 
         if customer_name and phone_number and address and item_numbers and quantities:
+            if not any(quantity > 0 for quantity in quantities):
+                return JsonResponse({'success': False, 'error': 'At least one item quantity must be greater than 0.'})
             try:
                 total_amount = 0
                 order = Order.objects.create(
@@ -279,12 +281,12 @@ def generate_invoice_pdf(request, order_id):
     for item in order.items.all():
         p.drawString(1*inch, y, item.item.item_name)
         p.drawString(3*inch, y, str(item.quantity))
-        p.drawString(4*inch, y, f"₹{item.item_price}")
-        p.drawString(5*inch, y, f"₹{item.item_price * item.quantity}")
+        p.drawString(4*inch, y, f"Rs.{item.item_price}")
+        p.drawString(5*inch, y, f"Rs.{item.item_price * item.quantity}")
         y -= 0.3*inch
     p.line(1*inch, y - 0.2*inch, 7*inch, y - 0.2*inch) 
     p.drawString(4*inch, y - 0.5*inch, "Grand Total:")
-    p.drawString(5*inch, y - 0.5*inch, f"₹{order.total_amount}")
+    p.drawString(5*inch, y - 0.5*inch, f"Rs.{order.total_amount}")
     p.showPage()
     p.save()
     return response
