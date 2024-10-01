@@ -437,6 +437,7 @@
   <div class="order-form-container">
    
     <form id="orderForm">
+      {% csrf_token %}
       <div class="form-group">
         <label for="name" class="required">Name</label>
         <input type="text" id="name" name="name" placeholder="Full Name" required>
@@ -561,10 +562,10 @@
 
       fetch('/placeorder/', { 
         method: 'POST',
+          body: formData,
           headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        },
+            'X-CSRFToken': getCookie('csrftoken')
+          }
       })
       .then(response => {
           if (!response.ok) {
