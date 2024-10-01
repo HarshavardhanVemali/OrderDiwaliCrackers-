@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diwali Crackers Order Form</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/diwali_icon.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url('{% static "images/formbackground.jpg" %}');
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh; 
+      color: #fff;
+      overflow: hidden;
+    } 
+
+    .order-form-container {
+      background: rgba(25, 20, 20, 0.9);
+      padding: 40px;
+      border-radius: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 600px;
+      color: #f9f9f9;
+      margin: 20px 0; 
+      height: calc(100vh - 20vh); 
+      overflow-y: auto; 
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2.2em;
+      color: #f0d78c;
+      margin: 0;
+      margin-top: 20px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px rgba(240, 215, 140, 0.8);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #ffbd59;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ffbd59;
+      border-radius: 8px;
+      background-color: rgba(25, 20, 20, 0.7);
+      color: #fff;
+      margin-bottom: 20px;
+      font-size: 16px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #f0d78c;
+      box-shadow: 0 0 8px rgba(240, 215, 140, 0.8);
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: rgba(30, 25, 25, 0.8);
+      border-radius: 10px;
+    }
+
+    .item-row select, 
+    .item-row input[type="number"] {
+      width: 70px;
+      padding: 8px;
+      text-align: center;
+      border: none;
+      border-radius: 6px;
+      background-color: rgba(25, 20, 20, 0.7);
+      color: #f0d78c;
+      font-size: 16px;
+      border: 1px solid #ffbd59;
+      margin-bottom: 0px;
+    }
+
+    .item-price, .item-total-price {
+      font-weight: bold;
+      color: #f0d78c;
+    }
+
+    .total-price {
+      text-align: right;
+      font-size: 1.6em;
+      margin-top: 30px;
+    }
+
+    .total-price span {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #f0d78c;
+    }
+
+    button {
+      display: block;
+      width: 50%;
+      padding: 15px;
+      background-color: #ffbd59;
+      color: #212529;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 30px;
+    }
+
+    button:hover {
+      background-color: #f0d78c;
+      transform: scale(1.05);
+    }
+    #submitbtn{
+      display: flex;
+      justify-content: center;
+    }
+    .firework-icon {
+      font-size: 1.5em;
+      margin-left: 10px;
+      color: #ffbd59;
+      animation: rotateFirework 2s linear infinite;
+    }
+
+    @keyframes rotateFirework {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .order-form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5;
+      z-index: -1;
+    }
+    label.required::after {
+      content: ' *'; 
+      color: red;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #ffbd59;
+    margin-bottom: 10px; 
+    padding: 10px; 
+    background-color: rgba(30, 25, 25, 0.8); 
+    border-radius: 10px;
+  }
+
+  .header-item,
+  .header-price,
+  .header-quantity,
+  .header-total {
+    flex: 1;
+    text-align: center;
+    margin-left: 30px;
+  }
+  #orderSuccessOverlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 100; 
+    color: #fff;
+  }
+
+  .overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .overlay-content h3 {
+    font-size: 1em;
+    color: #f0d78c;
+    margin-bottom: 20px;
+  }
+
+  .overlay-content button {
+    padding: 10px 20px;
+    background-color: #ffbd59;
+    color: #212529;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  @media only screen and (max-width: 425px) { 
+    .order-form-container {
+        max-width: 75%; 
+        padding: 30px; 
+        margin: 10px 0; 
+        border-radius: 20px; 
+        height: auto; 
+        overflow: auto; 
+    }
+
+    h2 {
+        font-size: 1em;
+        margin-top: 10px; 
+    }
+
+    label {
+        font-size: 14px; 
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"] {
+        padding: 10px; 
+        font-size: 14px;
+        margin-bottom: 15px; 
+    }
+
+    .item-row {
+        flex-direction: row; 
+        align-items: flex-start; 
+        padding: 10px;
+    }
+
+    .item-row label {
+        margin-bottom: 5px; 
+        font-size: 8px;
+    }
+
+    .item-row select, 
+    .item-row input[type="number"] {
+        width: 10%; 
+        margin-bottom: 10px;
+    }
+    .item-row input[type="number"]{
+      padding: 3px;
+      font-size: 8px;
+      border-radius: 3px;
+    }
+    .item-price, 
+    .item-total-price {
+        font-size: 8px;
+    }
+    .header-item, .header-price, .header-quantity, .header-total {
+      font-size: 6px;
+    }
+    .total-price {
+        font-size: 1em;
+        margin-top: 20px; 
+    }
+
+    button {
+        width: 70%; 
+        font-size: 0.8em; 
+        padding: 10px; 
+    }
+    button:hover{
+      transform: none;
+      background-color: #ffbd59;
+    }
+    total-price span{
+      font-size: 1.2em;
+    }
+    #orderSuccessOverlay {
+      display: none; 
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 100; 
+      color: #fff;
+    }
+
+    .overlay-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .overlay-content h3 {
+      font-size: 1em;
+      color: #f0d78c;
+      margin-bottom: 20px;
+    }
+
+    .overlay-content button {
+      padding: 8px 15px;
+      background-color: #ffbd59;
+      color: #212529;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+}
+@media only screen and (min-width: 426px) and (max-width: 700px) {
+  .order-form-container {
+        max-width: 75%; 
+        padding: 30px; 
+        margin: 10px 0; 
+        border-radius: 20px; 
+        height: auto; 
+        overflow: auto; 
+    }
+
+    h2 {
+        font-size: 1em;
+        margin-top: 10px; 
+    }
+
+    label {
+        font-size: 14px; 
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"] {
+        padding: 10px; 
+        font-size: 14px;
+        margin-bottom: 15px; 
+    }
+
+    .item-row {
+        flex-direction: row; 
+        align-items: flex-start; 
+        padding: 10px;
+    }
+
+    .item-row label {
+        margin-bottom: 5px; 
+        font-size: 10px;
+    }
+
+    .item-row select, 
+    .item-row input[type="number"] {
+        width: 10%; 
+        margin-bottom: 10px;
+    }
+    .item-row input[type="number"]{
+      padding: 3px;
+      font-size: 10px;
+      border-radius: 3px;
+    }
+    .item-price, 
+    .item-total-price {
+        font-size: 10px;
+    }
+    .header-item, .header-price, .header-quantity, .header-total {
+      font-size: 8px;
+    }
+    .total-price {
+        font-size: 1em;
+        margin-top: 20px; 
+    }
+
+    button {
+        width: 70%; 
+        font-size: 0.8em; 
+        padding: 10px; 
+    }
+    button:hover{
+      transform: none;
+      background-color: #ffbd59;
+    }
+    total-price span{
+      font-size: 1.2em;
+    }
+    .overlay-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .overlay-content h3 {
+      font-size: 1em;
+      color: #f0d78c;
+      margin-bottom: 20px;
+    }
+
+    .overlay-content button {
+      padding: 8px 15px;
+      background-color: #ffbd59;
+      color: #212529;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+}
+
+  </style>
+</head>
+<body>
+  <div id="loading-spinner" class="spinner-overlay" style="display: none;">
+    <div class="spinner">
+        
+    </div>
+</div>
+  <h2>Order Diwali Crackers <i class="fas fa-firework firework-icon"></i></h2>
+  <div class="order-form-container">
+   
+    <form id="orderForm">
+      <div class="form-group">
+        <label for="name" class="required">Name</label>
+        <input type="text" id="name" name="name" placeholder="Full Name" required>
+      </div>
+      <div class="form-group">
+        <label for="phone" class="required">Phone Number</label>
+        <input type="text" id="phone" name="phone" placeholder="Phone Number" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Email">
+      </div>
+      <div class="form-group">
+        <label for="address" class="required">Address</label>
+        <input type="text" id="address" name="address" placeholder="Address" required>
+      </div>
+      <h3>Items:</h3>
+      <div id="items-container">
+        <div class="header-row">
+          <span class="header-item">Item Name</span>
+          <span class="header-price">Price</span>
+          <span class="header-quantity">Quantity</span>
+          <span class="header-total">Total Cost</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="total-price">
+          Total: ₹<span id="totalPrice">0</span>
+        </div>
+        <div id="submitbtn">
+          <button type="submit">Place Order</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div id="orderSuccessOverlay">
+    <div class="overlay-content">
+      <h3>Order Placed Successfully!</h3>
+      <p>Thank you for your order. You will receive a confirmation email shortly.</p>
+      <div style="display: flex;justify-content: center;">
+        <button id="closeOverlay">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+            showSpinner();
+            Promise.all([
+            fetchItems()
+            ])
+            .then(() => {
+                hideSpinner(); 
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                hideSpinner();
+            });
+        });
+        function showSpinner() {
+            document.getElementById('loading-spinner').style.display = 'flex';
+        }
+
+        function hideSpinner() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+    function fetchItems(){
+        fetch('/admingetitems/', { 
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success === false) {
+                alert(data.error);
+            } else {
+                populateItems(data); 
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem fetching the items:', error);
+        });
+    }
+
+    function populateItems(items) {
+      const itemsContainer = document.getElementById('items-container');
+      itemsContainer.innerHTML = `
+        <div class="header-row">
+          <span class="header-item">Item Name</span>
+          <span class="header-price">Price</span>
+          <span class="header-quantity">Quantity</span>
+          <span class="header-total">Total Cost</span>
+        </div>
+      `;
+
+      items.forEach(item => {
+        const itemRow = `
+          <div class="item-row">
+            <label for="item_${item.item_number}" style="margin-bottom: 0px;">${item.item_name}</label>
+            <input type="hidden" name="item_number" value="${item.item_number}"> <span class="item-price">₹${item.price}</span>
+            <input type="number" id="quantity_${item.item_number}" name="quantity_${item.item_number}" value="0" min="0" data-price="${item.price}" oninput="updateItemPrice(this); updateTotalPrice()" style="margin-bottom:0px;">
+            <span class="item-total-price" id="itemTotal_${item.item_number}">₹0.00</span>
+          </div>`;
+        itemsContainer.innerHTML += itemRow;
+      });
+    }
+    document.getElementById('orderForm').addEventListener('submit', function(event) {
+      event.preventDefault(); 
+
+      const formData = new FormData(this); 
+
+      fetch('/placeorder/', { 
+        method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          if (data.success) {
+              alert(data.message); 
+              this.reset(); 
+              updateTotalPrice(); 
+              window.location.href = data.invoice_url;
+              document.getElementById('orderSuccessOverlay').style.display = 'block'; 
+          } else {
+              alert(data.error); 
+          }
+      })
+      .catch(error => {
+          console.error('Error placing order:', error);
+          alert('An error occurred while placing the order.'); 
+      });
+  });
+  document.getElementById('closeOverlay').addEventListener('click', function() {
+    document.getElementById('orderSuccessOverlay').style.display = 'none';
+  });
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateItemPrice(input) {
+        const itemPrice = parseFloat(input.dataset.price);
+        const quantity = parseInt(input.value) || 0; 
+        const itemTotal = itemPrice * quantity;
+        document.getElementById(`itemTotal_${input.id.split('_')[1]}`).textContent = `₹${itemTotal.toFixed(2)}`;
+    }
+
+    function updateTotalPrice() {
+        const itemRows = document.querySelectorAll('.item-row');
+        let totalPrice = 0;
+
+        itemRows.forEach(row => {
+            const itemTotalSpan = row.querySelector('.item-total-price');
+            const itemTotal = parseFloat(itemTotalSpan.textContent.replace('₹', '')); 
+            totalPrice += itemTotal;
+        });
+
+        document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+    }
+  </script>
+</body>
+</html>

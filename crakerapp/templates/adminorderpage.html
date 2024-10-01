@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/adminpage.css' %}">
+</head>
+<style>
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    overflow: auto;
+}
+
+.overlay-content {
+    position: relative; 
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: auto;
+
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+}
+
+.order-items-table {
+  width: 100%; 
+  border-collapse: collapse; 
+}
+
+.order-items-table th, 
+.order-items-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.order-items-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+</style>
+<body>
+    <header>
+        <div class="header-container">
+            <div id="college_title" style="display: flex;align-items: center;">
+                <div class="menu-toggle" style="margin-right: 5px;margin-top: 3px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#888" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleSidebar()">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </div>
+                </div>
+        </div>
+    </header>
+    <div class="main-container">
+        <div id="loading-spinner" class="spinner-overlay" style="display: none;">
+            <div class="spinner">
+                
+            </div>
+        </div>
+        <div id="overlay-container"></div>
+        <nav class="sidebar" id="mySidebar">
+            <ul>
+                <li><a class="nav-link" href="{% url 'admindashboard' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection" viewBox="0 0 16 16">
+                    <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5z"/>
+                  </svg>Items</a></li>
+                <li><a class="nav-link active" href="{% url 'adminorderpage' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16">
+                    <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                  </svg>Orders</a></li>
+                <li><a class="nav-link" href="{% url 'adminitemcountpage' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                  </svg>Items count</a></li>
+                <li class="logout-item">
+                    <a class="nav-link" href="{% url 'admin_logout_view' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <main class="content"> 
+            <div class="subnav">
+                <h3>Orders</h3>
+            </div>
+            <div class="tablelist">
+                <div class="table-container">
+                    <table class="tables" id="ordersTable">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Address</th>
+                                <th>Actions</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="orderItemsOverlay" class="overlay">
+                <div class="overlay-content">
+                    <span class="close-btn" onclick="hideOrderItemOverlay()">&times;</span>
+                    <h3>Order Items</h3>
+                    <div id="orderItemsList"></div> 
+                </div>
+            </div>
+            
+        </main> 
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchOrders();
+        });
+
+        function fetchOrders() {
+            showSpinner();
+            fetch('/getorders/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(orders => {
+                populateOrdersTable(orders);
+                hideSpinner();
+            })
+            .catch(error => {
+                console.error('Error fetching orders:', error);
+                hideSpinner();
+            });
+        }
+
+        function populateOrdersTable(orders) {
+            const tbody = document.querySelector("#ordersTable tbody");
+            tbody.innerHTML = ''; 
+
+            if (orders.length > 0) {
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.order_id}</td>
+                        <td>${order.customer_name}</td> 
+                        <td>${order.phone_number}</td>
+                        <td>${order.address}</td>
+                        <td>
+                            <button onclick="viewOrderItems(${order.order_id})" class="view-button">View Items</button>
+                        </td>
+                        <td>
+                            <button onclick="OrderDelivered('${order.order_id}')" class="view-button" 
+                                ${order.status === 'delivered' ? 'disabled style="background-color: lightgray;"' : ''}>
+                                Delivered
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = 6; 
+                cell.textContent = 'No Orders Found';
+                cell.style.textAlign = 'center'; 
+                row.appendChild(cell);
+                tbody.appendChild(row);
+            }
+        }
+
+        function viewOrderItems(orderId) {
+            showSpinner();
+            fetch(`/getorderitems/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(items => {
+                displayOrderItems(items);
+                hideSpinner();
+                showOrderItemOverlay();
+            })
+            .catch(error => {
+                console.error('Error fetching order items:', error);
+                hideSpinner();
+            });
+        }
+        function OrderDelivered(orderId) {
+            showSpinner();
+            fetch(`/orderdelevired/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(items => {
+                hideSpinner();
+                fetchOrders();
+            })
+            .catch(error => {
+                console.error('Error fetching order items:', error);
+                hideSpinner();
+            });
+        }
+
+        function displayOrderItems(data) {
+            const orderItemsList = document.getElementById("orderItemsList");
+            orderItemsList.innerHTML = ''; 
+
+            if (data.items.length === 0) {
+                orderItemsList.innerHTML = '<p>No items found for this order.</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.classList.add('order-items-table');
+            const headerRow = table.insertRow();
+            const itemHeader = headerRow.insertCell();
+            itemHeader.textContent = 'Item Name';
+            const quantityHeader = headerRow.insertCell();
+            quantityHeader.textContent = 'Quantity';
+            const priceHeader = headerRow.insertCell();
+            priceHeader.textContent = 'Price (₹)';
+            const totalHeader = headerRow.insertCell();
+            totalHeader.textContent = 'Total (₹)';
+            data.items.forEach(item => {
+                const row = table.insertRow();
+                const itemNameCell = row.insertCell();
+                itemNameCell.textContent = item.item_name;
+                const quantityCell = row.insertCell();
+                quantityCell.textContent = item.quantity;
+                const priceCell = row.insertCell();
+                priceCell.textContent = item.item_price.toFixed(2);
+                const totalCell = row.insertCell();
+                totalCell.textContent = item.item_total.toFixed(2);
+            });
+            const totalRow = table.insertRow();
+            const totalLabelCell = totalRow.insertCell();
+            totalLabelCell.colSpan = 3;
+            totalLabelCell.textContent = 'Total Order Amount:';
+            const totalAmountCell = totalRow.insertCell();
+            totalAmountCell.textContent = `₹${data.total_amount.toFixed(2)}`;
+            orderItemsList.appendChild(table);
+        }
+        function showOrderItemOverlay() {
+            document.getElementById("orderItemsOverlay").style.display = "block";
+        }
+
+        function hideOrderItemOverlay() {
+            document.getElementById("orderItemsOverlay").style.display = "none";
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        function showSpinner() {
+            document.getElementById('loading-spinner').style.display = 'flex';
+        }
+
+        function hideSpinner() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+        function toggleSidebar() {
+            document.getElementById("mySidebar").classList.toggle("active");
+            document.querySelector(".main-container").classList.toggle("sidebar-active");
+        }
+</script>
+</body>
+</html>
