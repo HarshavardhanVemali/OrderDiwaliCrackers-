@@ -13,6 +13,8 @@ from django.contrib.auth.decorators import user_passes_test
 import uuid
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from openpyxl import Workbook
+from io import BytesIO 
 
 def admin_required(view_func):
     return user_passes_test(
@@ -240,6 +242,60 @@ def orderdelevired(request,order_id):
             return JsonResponse({'success': False, 'error': 'Order not found.'})
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+@admin_required
+def deleteorder(request,order_id):
+    if request.method=='POST':
+        try:
+            order = Order.objects.get(order_id=order_id)     
+            order.delete()
+            return JsonResponse({'success':True})
+        except Order.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Order not found.'})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+    
+@admin_required
+def download_report(request):
+    if request.method == 'POST':
+        try:
+            item_counts = OrderItem.objects.values('item__item_number', 'item__item_name').annotate(
+                total_quantity=Sum('quantity')
+            ).order_by('-total_quantity')
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Item Counts Report" 
+            headers = [
+                'Item Number',
+                'Item Name',
+                'Total Quantity'
+            ]
+            for col_num, header in enumerate(headers, 1):  
+                ws.cell(row=1, column=col_num, value=header)
+                ws.column_dimensions[chr(ord('A') + col_num - 1)].width = 20 
+            for row_num, item in enumerate(item_counts, 2):  
+                ws.cell(row=row_num, column=1, value=item['item__item_number'])
+                ws.cell(row=row_num, column=2, value=item['item__item_name'])
+                ws.cell(row=row_num, column=3, value=item['total_quantity'])
+
+            output = BytesIO()
+            wb.save(output)  
+            output.seek(0) 
+
+            response = HttpResponse(
+                output.read(),
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+            response['Content-Disposition'] = 'attachment; filename=Item_Counts_Report.xlsx'
+
+            return response
+
+        except Exception as e: 
+            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Method not allowed. Use POST.'}, status=405)
+    
+
 @admin_required
 def adminitemcountpage(request):
     return render(request,'adminitemcount.html')
