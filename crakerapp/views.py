@@ -130,8 +130,7 @@ def delete_item(request):
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@csrf_exempt
-@require_POST
+
 def place_order(request):
     if request.method == 'POST':
         customer_name = request.POST.get('name')
