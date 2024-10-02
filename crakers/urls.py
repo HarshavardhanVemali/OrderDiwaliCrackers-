@@ -24,4 +24,4 @@ urlpatterns = [
     path('getorders/',views.getorders,name='getorders'),
     path('adminitemcountpage/',views.adminitemcountpage,name='adminitemcountpage'),
     path('getitemcounts/',views.get_item_counts,name='getitemcounts'),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]#+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

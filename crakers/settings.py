@@ -27,8 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cryct^9e3@7^do@jvxyabngxj+vq-(a*mhdt0a*4_juit9na(o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = False
 ALLOWED_HOSTS = ['54.252.251.76','www.diwalicrackers.store','*']
 
 
