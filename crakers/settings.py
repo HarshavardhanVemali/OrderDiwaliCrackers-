@@ -77,6 +77,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crakers.wsgi.application'
 
+CSRF_TRUSTED_ORIGINS = ['https://diwalicrackers.store']
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
