@@ -220,6 +220,9 @@
     font-size: 1em;
     cursor: pointer;
   }
+  .itemname{
+      max-width: 120px;
+    }
   @media only screen and (max-width: 425px) { 
     .order-form-container {
         max-width: 75%; 
@@ -327,6 +330,9 @@
       font-size: 0.9em;
       cursor: pointer;
     }
+    .itemname{
+      max-width: 60px;
+    }
 }
 @media only screen and (min-width: 426px) and (max-width: 700px) {
   .order-form-container {
@@ -423,7 +429,38 @@
       font-size: 0.9em;
       cursor: pointer;
     }
-}
+    .itemname{
+      max-width: 80px;
+    }
+    
+  }
+  .spinner-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .spinner {
+        border: 6px solid #f3f3f3; 
+        border-top: 6px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
 
   </style>
 </head>
@@ -487,10 +524,17 @@
   </div>
 
   <script>
+      function showSpinner() {
+          document.getElementById('loading-spinner').style.display = 'flex';
+      }
+
+      function hideSpinner() {
+          document.getElementById('loading-spinner').style.display = 'none';
+      }
     document.addEventListener('DOMContentLoaded', () => {
             showSpinner();
             Promise.all([
-            fetchItems()
+              fetchItems()
             ])
             .then(() => {
                 hideSpinner(); 
@@ -500,15 +544,9 @@
                 hideSpinner();
             });
         });
-        function showSpinner() {
-            document.getElementById('loading-spinner').style.display = 'flex';
-        }
 
-        function hideSpinner() {
-            document.getElementById('loading-spinner').style.display = 'none';
-        }
     function fetchItems(){
-        fetch('/admingetitems/', { 
+        return fetch('/admingetitems/', { 
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
@@ -547,7 +585,7 @@
       items.forEach(item => {
         const itemRow = `
           <div class="item-row">
-            <label for="item_${item.item_number}" style="margin-bottom: 0px;">${item.item_name}</label>
+            <label for="item_${item.item_number}" style="margin-bottom: 0px;" class="itemname">${item.item_name}</label>
             <input type="hidden" name="item_number" value="${item.item_number}"> <span class="item-price">₹${item.price}</span>
             <input type="number" id="quantity_${item.item_number}" name="quantity_${item.item_number}" value="0" min="0" data-price="${item.price}" oninput="updateItemPrice(this); updateTotalPrice()" style="margin-bottom:0px;">
             <span class="item-total-price" id="itemTotal_${item.item_number}">₹0.00</span>
@@ -559,7 +597,7 @@
       event.preventDefault(); 
 
       const formData = new FormData(this); 
-
+      showSpinner();
       fetch('/placeorder/', { 
         method: 'POST',
           body: formData,
@@ -568,6 +606,7 @@
           }
       })
       .then(response => {
+        hideSpinner();
           if (!response.ok) {
               throw new Error('Network response was not ok');
           }
@@ -575,9 +614,10 @@
       })
       .then(data => {
           if (data.success) {
-              alert(data.message); 
               this.reset(); 
+              fetchItems();
               updateTotalPrice(); 
+              updateItemPrice();
               window.location.href = data.invoice_url;
               document.getElementById('orderSuccessOverlay').style.display = 'block'; 
           } else {
@@ -585,6 +625,7 @@
           }
       })
       .catch(error => {
+        hideSpinner();
           console.error('Error placing order:', error);
           alert('An error occurred while placing the order.'); 
       });

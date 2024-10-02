@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-cryct^9e3@7^do@jvxyabngxj+vq-(a*mhdt0a*4_juit9na(o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['54.252.251.76','www.diwalicrackers.store']
 
 
 # Application definition
