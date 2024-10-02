@@ -17,6 +17,7 @@ urlpatterns = [
     path('adminorderpage/',views.adminorderpage,name='adminorderpage'),
     path('getorderitems/<int:order_id>/', views.getorderitems, name='getorderitems'),
     path('orderdelevired/<int:order_id>/', views.orderdelevired, name='orderdelevired'),
+    path('admindownloadinvoice/<int:order_id>/', views.generate_invoice_pdf, name='admindownloadinvoice'),
     path('deleteorder/<int:order_id>/', views.deleteorder, name='deleteorder'),
     path('downloadreport/',views.download_report,name='downloadreport'),
     path('invoice/<int:order_id>/', views.generate_invoice_pdf, name='generate_invoice_pdf'),

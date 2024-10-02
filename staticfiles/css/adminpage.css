@@ -280,6 +280,7 @@ z-index: 1000;
 }
 
 #orderItemsList {
+    max-height: 80vh;
     margin-top: 20px; 
 }
 

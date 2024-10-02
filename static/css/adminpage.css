@@ -281,6 +281,7 @@ z-index: 1000;
 
 #orderItemsList {
     margin-top: 20px; 
+    max-height:80vh ;
 }
 
 #orderItemsList ul {

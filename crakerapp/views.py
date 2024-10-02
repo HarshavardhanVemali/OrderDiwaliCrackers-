@@ -310,7 +310,6 @@ def get_item_counts(request):
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
-
 def generate_invoice_pdf(request, order_id):
     try:
         order = Order.objects.get(order_id=order_id)
@@ -320,30 +319,47 @@ def generate_invoice_pdf(request, order_id):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="order_{order_id}_invoice.pdf"'
     p = canvas.Canvas(response, pagesize=letter)
-    p.drawString(1*inch, 10.5*inch, "Diwali Crackers")
-    p.drawString(1*inch, 10*inch, "Invoice")
-    p.line(1*inch, 9.8*inch, 7*inch, 9.8*inch)  
-    p.drawString(1*inch, 9.5*inch, f"Order ID: {order.order_id}")
-    p.drawString(1*inch, 9*inch, f"Recipient Name: {order.customer_name}")
-    p.drawString(1*inch, 8.5*inch, f"Phone Number: {order.phone_number}")
-    p.drawString(1*inch, 8*inch, f"Address: {order.address}")
-    p.drawString(1*inch, 7.5*inch, "Item Name")
-    p.drawString(3*inch, 7.5*inch, "Quantity")
-    p.drawString(4*inch, 7.5*inch, "Price")
-    p.drawString(5*inch, 7.5*inch, "Total")
-    p.line(1*inch, 7.3*inch, 7*inch, 7.3*inch) 
-    y = 7*inch
+    p.drawString(1 * inch, 10.5 * inch, "Diwali Crackers")
+    p.drawString(1 * inch, 10 * inch, "Invoice")
+    p.line(1 * inch, 9.8 * inch, 7 * inch, 9.8 * inch)
+    p.drawString(1 * inch, 9.5 * inch, f"Order ID: {order.order_id}")
+    p.drawString(1 * inch, 9 * inch, f"Recipient Name: {order.customer_name}")
+    p.drawString(1 * inch, 8.5 * inch, f"Phone Number: {order.phone_number}")
+    p.drawString(1 * inch, 8 * inch, f"Address: {order.address}")
+    def add_page_header():  
+        p.drawString(1 * inch, 7.5 * inch, "Item Name") 
+        p.drawString(4.5 * inch, 7.5 * inch, "Quantity")  
+        p.drawString(5.5 * inch, 7.5 * inch, "Price")     
+        p.drawString(6.5 * inch, 7.5 * inch, "Total")    
+        p.line(1 * inch, 7.3 * inch, 7 * inch, 7.3 * inch)
+
+    y = 7 * inch
+
+    add_page_header()
     for item in order.items.all():
-        p.drawString(1*inch, y, item.item.item_name)
-        p.drawString(3*inch, y, str(item.quantity))
-        p.drawString(4*inch, y, f"Rs.{item.item_price}")
-        p.drawString(5*inch, y, f"Rs.{item.item_price * item.quantity}")
-        y -= 0.3*inch
-    p.line(1*inch, y - 0.2*inch, 7*inch, y - 0.2*inch) 
-    p.drawString(4*inch, y - 0.5*inch, "Grand Total:")
-    p.drawString(5*inch, y - 0.5*inch, f"Rs.{order.total_amount}")
+        if y < 1 * inch: 
+            p.showPage()
+            y = 7 * inch 
+            add_page_header()
+
+        p.drawString(1 * inch, y, item.item.item_name)  
+        p.drawString(4.5 * inch, y, str(item.quantity))  
+        p.drawString(5.5 * inch, y, f"Rs.{item.item_price}")  
+        p.drawString(6.5 * inch, y, f"Rs.{item.item_price * item.quantity}") 
+        y -= 0.3 * inch
+
+    if y < 1 * inch:  
+        p.showPage()
+        y = 7 * inch
+        add_page_header()
+
+    p.line(1 * inch, y - 0.2 * inch, 7 * inch, y - 0.2 * inch)
+    p.drawString(5.5 * inch, y - 0.5 * inch, "Grand Total:")
+    p.drawString(6.5 * inch, y - 0.5 * inch, f"Rs.{order.total_amount}")
+
     p.showPage()
     p.save()
+
     return response
 
 @admin_required

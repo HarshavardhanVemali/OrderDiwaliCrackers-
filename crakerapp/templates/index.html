@@ -221,7 +221,7 @@
     cursor: pointer;
   }
   .itemname{
-      max-width: 120px;
+      width: 120px;
     }
     .view-items-btn {
       position: fixed;
@@ -241,6 +241,10 @@
     .view-items-btn:hover {
       background-color: #f0d78c;
     }
+    .processing-content h3 {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
 
   @media only screen and (max-width: 425px) { 
     .order-form-container {
@@ -350,7 +354,7 @@
       cursor: pointer;
     }
     .itemname{
-      max-width: 60px;
+      width: 60px;
     }
     .view-items-btn {
       position: fixed;
@@ -370,6 +374,10 @@
     .view-items-btn:hover {
       background-color: #ffbd59;
     }
+    .processing-content h3 {
+    margin-top: 20px;
+    font-size: 0.8em;
+  }
 }
 @media only screen and (min-width: 426px) and (max-width: 700px) {
   .order-form-container {
@@ -467,7 +475,7 @@
       cursor: pointer;
     }
     .itemname{
-      max-width: 80px;
+      width: 80px;
     }
     .view-items-btn {
       position: fixed;
@@ -487,6 +495,10 @@
     .view-items-btn:hover {
       background-color: #ffbd59;
     }
+    .processing-content h3 {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
     
   }
   .spinner-overlay {
@@ -504,7 +516,7 @@
 
     .spinner {
         border: 6px solid #f3f3f3; 
-        border-top: 6px solid #3498db;
+        border-top: 6px solid #ffbd59;
         border-radius: 50%;
         width: 30px;
         height: 30px;
@@ -515,14 +527,49 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
-    
+    .processing-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+  }
+
+  .processing-content {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+  }
+
+
+
 
   </style>
 </head>
 <body>
+  <div id="processingOverlay" class="processing-overlay">
+    <div class="processing-content">
+      <h3>Please wait for 20-50 seconds, your order is being processed...</h3>
+        <div class="spinner"></div>
+
+    </div>
+</div>
+
   <div id="loading-spinner" class="spinner-overlay" style="display: none;">
     <div class="spinner">
-        
+       
     </div>
 </div>
   <h2>Order Diwali Crackers <i class="fas fa-firework firework-icon"></i></h2>
@@ -572,7 +619,7 @@
   <div id="orderSuccessOverlay">
     <div class="overlay-content">
       <h3>Order Placed Successfully!</h3>
-      <p>Thank you for your order. You will receive a confirmation email shortly.</p>
+      <p>Thank you for your order. Wait for 20-30 sec you invoice will be downloaded.</p>
       <div style="display: flex;justify-content: center;">
         <button id="closeOverlay">Close</button>
       </div>
@@ -651,9 +698,8 @@
     }
     document.getElementById('orderForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
-
+      document.getElementById("processingOverlay").style.display = "flex";
       const formData = new FormData(this); 
-      showSpinner();
       fetch('/placeorder/', { 
         method: 'POST',
           body: formData,
@@ -662,7 +708,6 @@
           }
       })
       .then(response => {
-        hideSpinner();
           if (!response.ok) {
               throw new Error('Network response was not ok');
           }
@@ -673,13 +718,15 @@
               this.reset(); 
               fetchItems();
               window.location.href = data.invoice_url;
-              document.getElementById('orderSuccessOverlay').style.display = 'block'; 
+              document.getElementById('orderSuccessOverlay').style.display = 'block';   
+              document.getElementById("processingOverlay").style.display = "none";
           } else {
-              alert(data.error); 
+              alert(data.error);
+              document.getElementById("processingOverlay").style.display = "none"; 
           }
       })
       .catch(error => {
-        hideSpinner();
+        document.getElementById("processingOverlay").style.display = "none";
           console.error('Error placing order:', error);
           alert('An error occurred while placing the order.'); 
       });
