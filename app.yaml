@@ -1,0 +1,18 @@
+runtime: python39  # or python38, python37
+entrypoint: gunicorn -b :$PORT crakers.wsgi
+
+instance_class: F2  # You can use a smaller class for smaller apps
+env_variables:
+  DJANGO_SETTINGS_MODULE: crakers.settings
+
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 2
+
+handlers:
+  - url: /static
+    static_dir: static/
+
+  - url: /.*
+    script: auto

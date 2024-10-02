@@ -672,8 +672,6 @@
           if (data.success) {
               this.reset(); 
               fetchItems();
-              updateTotalPrice(); 
-              updateItemPrice();
               window.location.href = data.invoice_url;
               document.getElementById('orderSuccessOverlay').style.display = 'block'; 
           } else {
