@@ -223,6 +223,25 @@
   .itemname{
       max-width: 120px;
     }
+    .view-items-btn {
+      position: fixed;
+      top: 20px; 
+      right: 20px; 
+      padding: 10px 15px;
+      background-color: #ffbd59; 
+      color: #212529; 
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease; 
+      z-index: 10; 
+    }
+
+    .view-items-btn:hover {
+      background-color: #f0d78c;
+    }
+
   @media only screen and (max-width: 425px) { 
     .order-form-container {
         max-width: 75%; 
@@ -333,6 +352,24 @@
     .itemname{
       max-width: 60px;
     }
+    .view-items-btn {
+      position: fixed;
+      top: 10px; 
+      right: 10px; 
+      padding: 5px 10px;
+      background-color: #ffbd59; 
+      color: #212529; 
+      border: none;
+      border-radius: 5px;
+      font-size: 0.5em;
+      cursor: pointer;
+      transition: background-color 0.3s ease; 
+      z-index: 10; 
+    }
+
+    .view-items-btn:hover {
+      background-color: #ffbd59;
+    }
 }
 @media only screen and (min-width: 426px) and (max-width: 700px) {
   .order-form-container {
@@ -432,6 +469,24 @@
     .itemname{
       max-width: 80px;
     }
+    .view-items-btn {
+      position: fixed;
+      top: 10px; 
+      right: 10px; 
+      padding: 5px 10px;
+      background-color: #ffbd59; 
+      color: #212529; 
+      border: none;
+      border-radius: 5px;
+      font-size: 0.5em;
+      cursor: pointer;
+      transition: background-color 0.3s ease; 
+      z-index: 10; 
+    }
+
+    .view-items-btn:hover {
+      background-color: #ffbd59;
+    }
     
   }
   .spinner-overlay {
@@ -471,6 +526,7 @@
     </div>
 </div>
   <h2>Order Diwali Crackers <i class="fas fa-firework firework-icon"></i></h2>
+  <a href="{% static 'images/CRACKERS.pdf' %}" class="view-items-btn" target="_blank">View Items</a>
   <div class="order-form-container">
    
     <form id="orderForm">

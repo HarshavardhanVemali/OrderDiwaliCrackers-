@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-cryct^9e3@7^do@jvxyabngxj+vq-(a*mhdt0a*4_juit9na(o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.252.251.76','www.diwalicrackers.store']
+ALLOWED_HOSTS = ['54.252.251.76','www.diwalicrackers.store','*']
 
 
 # Application definition
@@ -132,7 +132,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
