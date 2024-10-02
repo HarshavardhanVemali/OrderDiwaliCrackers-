@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Items,Order,OrderItem
+from .models import Items,Order,OrderItem,FailedLoginAttempts
 
 class ItemAdmin(admin.ModelAdmin):
     list_display=('item_number','item_name','price')
@@ -13,6 +13,8 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display=('order','item','quantity','item_price')
     list_filter=('order','item','quantity','item_price')
 
+
+admin.site.register(FailedLoginAttempts)
 admin.site.register(Items,ItemAdmin)
 admin.site.register(Order,OrderAdmin)
 admin.site.register(OrderItem,OrderItemAdmin)
