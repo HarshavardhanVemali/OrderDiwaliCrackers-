@@ -698,6 +698,10 @@
     }
     document.getElementById('orderForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
+      if (!validatePhoneNumber()) {
+      alert('Please enter a valid phone number in the Indian format.');
+      return; 
+    }
       document.getElementById("processingOverlay").style.display = "flex";
       const formData = new FormData(this); 
       fetch('/placeorder/', { 
@@ -767,6 +771,11 @@
         });
 
         document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+    }
+    function validatePhoneNumber() {
+        const phoneNumber = document.getElementById('phone').value;
+        const phoneRegex = /^[6-9]\d{9}$/; 
+        return phoneRegex.test(phoneNumber);
     }
   </script>
 </body>
