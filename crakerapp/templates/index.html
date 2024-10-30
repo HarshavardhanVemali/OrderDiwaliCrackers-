@@ -574,8 +574,8 @@
 </div>
   <h2>Order Diwali Crackers <i class="fas fa-firework firework-icon"></i></h2>
   <a href="{% static 'images/CRACKERS.pdf' %}" class="view-items-btn" target="_blank">View Items</a>
-  <div class="order-form-container">
-   
+  <div class="order-form-container" style="display: flex;justify-content: center;">
+   <!--
     <form id="orderForm">
       {% csrf_token %}
       <div class="form-group">
@@ -614,7 +614,8 @@
           <span>Contact : 8978970366</span>
         </div>
       </div>
-    </form>
+    </form>-->
+      <h2 style="display: flex;justify-content: center;align-items: center;font-size: 24px;">We no longer taking any orders.</h2>
   </div>
   <div id="orderSuccessOverlay">
     <div class="overlay-content">
@@ -627,6 +628,7 @@
   </div>
 
   <script>
+    /*
       function showSpinner() {
           document.getElementById('loading-spinner').style.display = 'flex';
       }
@@ -776,7 +778,7 @@
         const phoneNumber = document.getElementById('phone').value;
         const phoneRegex = /^[6-9]\d{9}$/; 
         return phoneRegex.test(phoneNumber);
-    }
+    }*/
   </script>
 </body>
 </html>
